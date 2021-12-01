@@ -53,7 +53,7 @@ TEST(Parrallel_Operations_MPI,
   MPI_Comm_size(lincom, &procSize);
 
   if (procSize == 1) {
-    ASSERT_TRUE(true);
+    ASSERT_EQ(1, 1);
   } else {
     int neigh_count;
     MPI_Graph_neighbors_count(lincom, procSize - 1, &neigh_count);
@@ -73,9 +73,12 @@ TEST(Parrallel_Operations_MPI,
     MPI_Graph_neighbors_count(lincom, 2, &neigh_count);
 
     ASSERT_EQ(neigh_count, 2);
-  }
+  } else ASSERT_EQ(1, 1);
+}
 
-  ASSERT_TRUE(true);
+TEST(Parrallel_Operations_MPI,
+     test) {
+    ASSERT_TRUE(true);
 }
 
 int main(int argc, char **argv) {
