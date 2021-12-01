@@ -67,7 +67,7 @@ TEST(Parrallel_Operations_MPI, count_neighbors_of_middle_proc_is_correct) {
 
   if (procSize > 2) {
     int neigh_count;
-    MPI_Graph_neighbors_count(lincom, 2, &neigh_count);
+    MPI_Graph_neighbors_count(lincom, procSize - 2, &neigh_count);
 
     ASSERT_EQ(neigh_count, 2);
   } else {
