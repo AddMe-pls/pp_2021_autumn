@@ -53,29 +53,6 @@ TEST(Parrallel_Operations_MPI, can_send_data_from_last_to_first) {
   }
 }
 
-TEST(Parrallel_Operations_MPI, can_send_data_from_last_to_first) {
-  MPI_Comm lincom = GetlinearTopologyComm(MPI_COMM_WORLD);
-  int procSize, procRank;
-  MPI_Comm_size(lincom, &procSize);
-  MPI_Comm_rank(lincom, &procRank);
-
-  if (procSize == 1) {
-    ASSERT_TRUE(true);
-  } else {
-    if (procRank == procSize - 1) {
-      int dataMessage = 20;
-      MPI_Send(&dataMessage, 1, MPI_INT, 0, 0, lincom);
-    }
-    if (procRank == 0) {
-      int dataBuff;
-      MPI_Status stat;
-      MPI_Recv(&dataBuff, 1, MPI_INT, procSize - 1, 0, lincom, &stat);
-
-      ASSERT_EQ(dataBuff, 20);
-    }
-  }
-}
-
 TEST(Parrallel_Operations_MPI, count_neighbors_of_first_proc_is_correct) {
   MPI_Comm lincom = GetlinearTopologyComm(MPI_COMM_WORLD);
   int procSize;
