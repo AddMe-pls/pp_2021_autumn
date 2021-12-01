@@ -73,11 +73,12 @@ TEST(Parrallel_Operations_MPI,
     MPI_Graph_neighbors_count(lincom, 2, &neigh_count);
 
     ASSERT_EQ(neigh_count, 2);
-  } else ASSERT_EQ(1, 1);
+  } else {
+    ASSERT_EQ(1, 1);
+  }
 }
 
-TEST(Parrallel_Operations_MPI,
-     test) {
+TEST(Parrallel_Operations_MPI, test_check) {
     ASSERT_TRUE(true);
 }
 
