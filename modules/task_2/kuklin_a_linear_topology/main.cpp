@@ -4,7 +4,8 @@
 #include <gtest-mpi-listener.hpp>
 
 TEST(Parrallel_Operations_MPI, can_create_linear_topology) {
-  ASSERT_NO_THROW(GetlinearTopologyComm(MPI_COMM_WORLD));
+  MPI_Comm lincom;
+  ASSERT_NO_THROW(lincom = GetlinearTopologyComm(MPI_COMM_WORLD));
 }
 
 TEST(Parrallel_Operations_MPI, can_send_data_from_first_to_last) {
@@ -53,6 +54,52 @@ TEST(Parrallel_Operations_MPI, can_send_data_from_last_to_first) {
   }
 }
 
+TEST(Parrallel_Operations_MPI, can_send_data_from_middle_to_first) {
+  MPI_Comm lincom = GetlinearTopologyComm(MPI_COMM_WORLD);
+  int procSize, procRank;
+  MPI_Comm_size(lincom, &procSize);
+  MPI_Comm_rank(lincom, &procRank);
+
+  if (procSize < 3) {
+    ASSERT_TRUE(true);
+  } else {
+    if (procRank == procSize / 2) {
+      int dataMessage = 30;
+      MPI_Send(&dataMessage, 1, MPI_INT, 0, 0, lincom);
+    }
+    if (procRank == 0) {
+      int dataBuff;
+      MPI_Status stat;
+      MPI_Recv(&dataBuff, 1, MPI_INT, procSize / 2, 0, lincom, &stat);
+
+      ASSERT_EQ(dataBuff, 30);
+    }
+  }
+}
+
+TEST(Parrallel_Operations_MPI, can_send_data_from_middle_to_last) {
+  MPI_Comm lincom = GetlinearTopologyComm(MPI_COMM_WORLD);
+  int procSize, procRank;
+  MPI_Comm_size(lincom, &procSize);
+  MPI_Comm_rank(lincom, &procRank);
+
+  if (procSize < 3) {
+    ASSERT_TRUE(true);
+  } else {
+    if (procRank == procSize / 2) {
+      int dataMessage = 40;
+      MPI_Send(&dataMessage, 1, MPI_INT, procSize - 1, 0, lincom);
+    }
+    if (procRank == procSize - 1) {
+      int dataBuff;
+      MPI_Status stat;
+      MPI_Recv(&dataBuff, 1, MPI_INT, procSize / 2, 0, lincom, &stat);
+
+      ASSERT_EQ(dataBuff, 40);
+    }
+  }
+}
+
 TEST(Parrallel_Operations_MPI, count_neighbors_of_first_proc_is_correct) {
   MPI_Comm lincom = GetlinearTopologyComm(MPI_COMM_WORLD);
   int procSize;
@@ -90,9 +137,10 @@ TEST(Parrallel_Operations_MPI, count_neighbors_of_middle_proc_is_correct) {
 
   if (procSize > 2) {
     int neigh_count;
-    MPI_Graph_neighbors_count(lincom, procSize - 2, &neigh_count);
-
-    ASSERT_EQ(neigh_count, 2);
+    for (int i = 1; i < procSize - 1; i++) {
+      MPI_Graph_neighbors_count(lincom, i, &neigh_count);
+      ASSERT_EQ(neigh_count, 2);
+    }
   } else {
     ASSERT_TRUE(true);
   }
@@ -135,10 +183,11 @@ TEST(Parrallel_Operations_MPI, neighbors_of_middle_proc_is_correct) {
 
   if (procSize > 2) {
     int *neighbors = new int[2];
-    MPI_Graph_neighbors(lincom, procSize - 2, 2, neighbors);
-
-    ASSERT_EQ(neighbors[0], procSize - 3);
-    ASSERT_EQ(neighbors[1], procSize - 1);
+    for (int i = 1; i < procSize - 1; i++) {
+      MPI_Graph_neighbors(lincom, i, 2, neighbors);
+      ASSERT_EQ(neighbors[0], i - 1);
+      ASSERT_EQ(neighbors[1], i + 1);
+    }
   } else {
     ASSERT_TRUE(true);
   }
