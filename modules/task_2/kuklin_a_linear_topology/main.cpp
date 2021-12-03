@@ -4,8 +4,7 @@
 #include <gtest-mpi-listener.hpp>
 
 TEST(Parrallel_Operations_MPI, can_create_linear_topology) {
-  MPI_Comm lincom;
-  ASSERT_NO_THROW(lincom = GetlinearTopologyComm(MPI_COMM_WORLD));
+  ASSERT_NO_THROW(GetlinearTopologyComm(MPI_COMM_WORLD));
 }
 
 TEST(Parrallel_Operations_MPI, can_send_data_from_first_to_last) {
