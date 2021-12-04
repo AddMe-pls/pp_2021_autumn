@@ -33,5 +33,8 @@ MPI_Comm GetlinearTopologyComm(MPI_Comm comm) {
   MPI_Comm linear;
   MPI_Graph_create(comm, procSize, index, edges, false, &linear);
 
+  delete []index;
+  delete []edges;
+
   return linear;
 }
